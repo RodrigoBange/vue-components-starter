@@ -1,28 +1,18 @@
 <template>
   <h1 class="pt-5">Stock list</h1>
   <div class="row">
-    <!-- Individual stocks -->
-    <div class="col-md-4 mt-4" v-for="stock in stocks" :key="stock.name">
-      <div class="card">
-        <div class="card-body">
-          {{ stock.name }}
-          <span
-            :class="{
-              down: stock.price < stock.previousPrice,
-              up: stock.price > stock.previousPrice,
-            }"
-            >{{ stock.currency }} {{ stock.price.toFixed(4) }}</span
-          >
-        </div>
-      </div>
-    </div>
-    <!-- End of individual stocks -->
+    <StockItem v-for="stock in stocks" :stock="stock" @buy="buyStock" />
   </div>
 </template>
 
 <script>
+import StockItem from "./StockItem.vue";
+
 export default {
   name: "StockList",
+  components: {
+    StockItem
+  },
   data() {
     return {
       stocks: [
@@ -35,6 +25,9 @@ export default {
     };
   },
   methods: {
+    buyStock(amount, name) {
+      alert("You bought " + amount + " of " + name + " stocks.");
+    },
     updatePrices() {
       this.stocks.forEach((stock) => {
         stock.previousPrice = stock.price;
@@ -54,10 +47,4 @@ export default {
 </script>
 
 <style scoped>
-.up {
-  color: green;
-}
-.down {
-  color: red;
-}
 </style>
