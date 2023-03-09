@@ -3,15 +3,21 @@
   <div class="row">
     <StockItem v-for="stock in stocks" :stock="stock" @buy="buyStock" />
   </div>
+  <h1 class="pt-5">Your Portfolio</h1>
+  <div class="row">
+    <PortfolioItem v-for="portfolioItem in portfolio" :portfolioItem="portfolioItem" @sell="sellStock" />
+  </div>
 </template>
 
 <script>
 import StockItem from "./StockItem.vue";
+import PortfolioItem from "@/components/PortfolioItem.vue";
 
 export default {
   name: "StockList",
   components: {
-    StockItem
+    StockItem,
+    PortfolioItem
   },
   data() {
     return {
@@ -25,8 +31,40 @@ export default {
     };
   },
   methods: {
-    buyStock(amount, name) {
+    buyStock(amount, name, price) {
       alert("You bought " + amount + " of " + name + " stocks.");
+
+      var exists = false;
+      this.portfolio.forEach((portfolioItem) => {
+        if (portfolioItem.name === name) {
+          exists = true;
+          portfolioItem.stockAmount += amount;
+
+          if (portfolioItem.stockAmount > portfolioItem.maxStockAmount) {
+            portfolioItem.maxStockAmount = portfolioItem.stockAmount;
+            console.log(portfolioItem.maxStockAmount);
+          }
+        }
+      });
+
+      if (!exists) {
+        this.portfolio.push({name: name, stockAmount: amount, maxStockAmount: amount, price: price});
+      }
+    },
+    sellStock(amount, name) {
+      alert("You sold " + amount + " of " + name + " stocks.");
+
+      var i = 0;
+      this.portfolio.forEach((portfolioItem) => {
+        if (portfolioItem.name === name) {
+          portfolioItem.stockAmount -= amount;
+
+          if (portfolioItem.stockAmount <= 0) {
+            this.portfolio.splice(i, 1);
+          }
+        }
+        i++;
+      });
     },
     updatePrices() {
       this.stocks.forEach((stock) => {
